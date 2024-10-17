@@ -1,6 +1,6 @@
 {
     "name": "hejunjie/tools",
-    "description": "一个轻量级的实用工具库，封装了工作中经常使用的常见方法，帮助开发者简化日常开发任务，提高工作效率。",
+    "description": "一个PHP工具库，封装了工作中常用的字符串、数组、文件、网络请求、图像和实用程序函数（例如电话运营商和身份证号码地址查找）的常见操作。后续不断完善中...",
     "type": "library",
     "license": "MIT",
     "autoload": {
@@ -15,5 +15,7 @@
         }
     ],
     "minimum-stability": "stable",
-    "require": {}
+    "require": {
+        "php": ">=7.1"
+    }
 }
