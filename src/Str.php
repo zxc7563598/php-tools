@@ -269,15 +269,14 @@ class Str
         return $decryptedString;
     }
 
-
     /**
-     * 根据秒数获取时长
+     * 根据秒数转换为可读性时间
      * 
      * @param mixed $seconds 秒数
      * 
      * @return string|bool 
      */
-    public static function convertSecondsToDuration($seconds): string|bool
+    public static function formatDurationFromSeconds($seconds): string|bool
     {
         if (!is_numeric($seconds)) {
             return false;
