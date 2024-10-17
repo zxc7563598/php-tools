@@ -1,0 +1,19 @@
+{
+    "name": "hejunjie/tools",
+    "description": "一个轻量级的实用工具库，封装了工作中经常使用的常见方法，帮助开发者简化日常开发任务，提高工作效率。",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Hejunjie\\Tools\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "何俊杰",
+            "email": "junjie.he.925@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
