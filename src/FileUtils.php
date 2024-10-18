@@ -123,4 +123,45 @@ class FileUtils
         // 返回不带扩展名的文件名
         return pathinfo($filePath, PATHINFO_FILENAME);
     }
+
+    /**
+     * 删除文件或目录
+     * 
+     * @param mixed $dir 文件或文件夹路径
+     * 
+     * @return bool 
+     */
+    public static function fileDelete($dir): bool
+    {
+        // 确保提供的路径是一个目录
+        if (!is_dir($dir)) {
+            return true;
+        }
+        // 打开目录
+        if (!$dh = opendir($dir)) {
+            return false;
+        }
+        // 遍历目录中的所有文件和子目录
+        while (($file = readdir($dh)) !== false) {
+            if ($file === "." || $file === "..") {
+                continue; // 忽略当前目录和上级目录
+            }
+            $fullpath = rtrim($dir, '/') . '/' . $file;
+            // 如果是文件，则删除；如果是目录，递归删除子目录
+            if (is_dir($fullpath)) {
+                if (!self::fileDelete($fullpath)) {
+                    closedir($dh);
+                    return false; // 如果递归删除子目录失败，则直接返回 false
+                }
+            } else {
+                if (!unlink($fullpath)) {
+                    closedir($dh);
+                    return false; // 文件删除失败，直接返回 false
+                }
+            }
+        }
+        closedir($dh);
+        // 删除当前目录
+        return rmdir($dir);
+    }
 }

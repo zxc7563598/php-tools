@@ -46,6 +46,8 @@ $result = Str::getRandomSurname();
 | Arr::removeDuplicatesByField() | 根据二维数组中指定字段去重 |
 | Arr::groupByField() | 根据二维数组中的指定字段进行分组 |
 | Arr::arrayToCsv() | 数组转换为 CSV 格式的字符串 |
+| Arr::xmlParse() | xml解析为数组 |
+| Arr::arrayToXml() | 数组转换为xml |
 
 
 ### 文件操作
@@ -57,6 +59,7 @@ $result = Str::getRandomSurname();
 | FileUtils::getFileExtension() | 获取文件扩展名 |
 | FileUtils::joinPaths() | 拼接多个路径 |
 | FileUtils::getFileNameWithoutExtension() | 获取文件名（不带扩展名） |
+| FileUtils::fileDelete() | 删除文件或目录 |
 
 
 ### 网络请求操作
