@@ -147,4 +147,76 @@ class Arr
         // 获取缓冲区内容
         return ob_get_clean();
     }
+
+    /**
+     * 解析 XML 数据并返回数组
+     *
+     * @param string $xmlString XML 字符串
+     * 
+     * @return array 解析后的数组
+     * @throws \Exception
+     */
+    public static function xmlParse(string $xmlString): array
+    {
+        // 禁用 libxml 错误和启用异常
+        libxml_use_internal_errors(true);
+        // 加载 XML 字符串
+        $xml = simplexml_load_string($xmlString, "SimpleXMLElement", LIBXML_NOCDATA);
+        // 检查 XML 是否加载成功
+        if ($xml === false) {
+            $errors = libxml_get_errors();
+            libxml_clear_errors();
+            throw new \Exception("XML 解析错误: " . implode(", ", $errors));
+        }
+        // 转换为数组
+        return self::xmlToArray($xml);
+    }
+
+    /**
+     * 递归将 SimpleXMLElement 转换为数组
+     *
+     * @param SimpleXMLElement $xml XML 元素
+     * @return array 转换后的数组
+     */
+    private static function xmlToArray($xml): array
+    {
+        $array = json_decode(json_encode($xml), true);
+        // 处理每个元素
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                // 递归处理子元素
+                $array[$key] = self::xmlToArray($value);
+            }
+        }
+        return $array;
+    }
+
+    /**
+     * 将数组转换为 XML 字符串
+     *
+     * @param array $data 要转换的数组
+     * @param string $rootElement 根元素名称
+     * @param SimpleXMLElement|null $xmlObject 用于递归的 SimpleXMLElement 对象
+     * 
+     * @return string 转换后的 XML 字符串
+     */
+    public static function arrayToXml(array $data, string $rootElement = 'root', \SimpleXMLElement $xmlObject = null): string
+    {
+        // 创建根元素
+        if ($xmlObject === null) {
+            $xmlObject = new \SimpleXMLElement("<{$rootElement}/>");
+        }
+        foreach ($data as $key => $value) {
+            // 处理键名
+            $formattedKey = is_numeric($key) ? "item{$key}" : $key;
+            // 如果值是数组，则递归调用
+            if (is_array($value)) {
+                self::arrayToXml($value, $formattedKey, $xmlObject->addChild($formattedKey));
+            } else {
+                // 添加值到 XML
+                $xmlObject->addChild($formattedKey, htmlspecialchars($value));
+            }
+        }
+        return $xmlObject->asXML();
+    }
 }
