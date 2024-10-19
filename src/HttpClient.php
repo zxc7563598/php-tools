@@ -55,13 +55,13 @@ class HttpClient
      * 
      * @param string $url URL地址
      * @param array $headers header数组
-     * @param string|null $data 请求数据
+     * @param mixed $data 请求数据
      * @param int $timeout 超时时间（秒）
      * 
      * @return array ['httpStatus' => 'Http Status 状态码', 'data' => '返回内容']
      * @throws Exception 如果请求失败抛出异常
      */
-    public static function sendPostRequest(string $url, array $headers = [], string $data = null, int $timeout = 10): array
+    public static function sendPostRequest(string $url, array $headers = [], mixed $data = null, int $timeout = 10): array
     {
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
             throw new \Exception('无效的 URL: ' . $url);
