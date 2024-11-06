@@ -131,37 +131,37 @@ class FileUtils
      * 
      * @return bool 
      */
-    public static function fileDelete($dir): bool
+    public static function fileDelete(string $path): bool
     {
-        // 确保提供的路径是一个目录
-        if (!is_dir($dir)) {
+        // 如果是文件，直接删除
+        if (is_file($path)) {
+            return unlink($path);
+        }
+        // 如果是目录，递归删除
+        if (!is_dir($path)) {
             return true;
         }
-        // 打开目录
-        if (!$dh = opendir($dir)) {
+        if (!$dh = opendir($path)) {
             return false;
         }
-        // 遍历目录中的所有文件和子目录
         while (($file = readdir($dh)) !== false) {
             if ($file === "." || $file === "..") {
-                continue; // 忽略当前目录和上级目录
+                continue;
             }
-            $fullpath = rtrim($dir, '/') . '/' . $file;
-            // 如果是文件，则删除；如果是目录，递归删除子目录
+            $fullpath = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $file;
             if (is_dir($fullpath)) {
                 if (!self::fileDelete($fullpath)) {
                     closedir($dh);
-                    return false; // 如果递归删除子目录失败，则直接返回 false
+                    return false;
                 }
             } else {
                 if (!unlink($fullpath)) {
                     closedir($dh);
-                    return false; // 文件删除失败，直接返回 false
+                    return false;
                 }
             }
         }
         closedir($dh);
-        // 删除当前目录
-        return rmdir($dir);
+        return rmdir($path);
     }
 }
