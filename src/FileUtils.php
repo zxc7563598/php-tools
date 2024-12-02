@@ -2,6 +2,8 @@
 
 namespace Hejunjie\Tools;
 
+use Exception;
+
 /**
  * 文件处理类
  * @package Hejunjie\Tools
@@ -127,7 +129,7 @@ class FileUtils
     /**
      * 删除文件或目录
      * 
-     * @param mixed $dir 文件或文件夹路径
+     * @param string $dir 文件或文件夹路径
      * 
      * @return bool 
      */
@@ -163,5 +165,65 @@ class FileUtils
         }
         closedir($dh);
         return rmdir($path);
+    }
+
+    /**
+     * 获取文件中的唯一行（去重）
+     * 
+     * @param string $inputFile 指定检查的文件路径
+     * @param string $outputFile 指定最终唯一值写入文件路径，为空则在方法结果中返回数组
+     * 
+     * @return bool|array 
+     */
+    public function writeUniqueLinesToFile(string $inputFile, string $outputFile = ''): bool|array
+    {
+        ini_set('memory_limit', '-1');
+
+        $handle = null;
+        $outputHandle = null;
+        $hashSet = [];
+        try {
+            $handle = fopen($inputFile, 'r');
+            if (!$handle) {
+                throw new Exception("打开输入文件失败： 输入文件：$inputFile. 请检查文件是否存在且可读。");
+            }
+            if (!is_null($outputFile)) {
+                $directory = dirname($outputFile);
+                // 检查目录是否存在，不存在则创建
+                if (!is_dir($directory)) {
+                    if (!mkdir($directory, 0755, true)) {  // 尝试递归创建目录
+                        throw new \Exception("无法创建目标目录: " . $directory);
+                    }
+                }
+                $outputHandle = fopen($outputFile, 'w');
+                if (!$outputHandle) {
+                    throw new Exception("未能打开输出文件： $outputFile. 请检查目录是否可写。");
+                }
+            }
+            while (($line = fgets($handle)) !== false) {
+                $line = trim($line);
+                if ($line !== '' && !isset($hashSet[$line])) {
+                    $hashSet[$line] = true; // 记录唯一值
+                    if ($outputFile !== null) {
+                        fwrite($outputHandle, $line . PHP_EOL); // 写入输出文件
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            throw new Exception("Error: " . $e->getMessage());
+        } finally {
+            if ($handle) {
+                fclose($handle);
+            }
+            if ($outputHandle) {
+                fclose($outputHandle);
+            }
+        }
+        // 返回结果
+        if (!is_null($outputFile)) {
+            return array_keys($hashSet); // 返回唯一值的数组
+        } else {
+            return true;
+        }
     }
 }
