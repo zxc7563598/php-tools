@@ -178,10 +178,9 @@ class FileUtils
      * @return bool|array 
      * @throws Exception
      */
-    public function writeUniqueLinesToFile(string $inputFile, string $outputFile = ''): bool|array
+    public static function writeUniqueLinesToFile(string $inputFile, string $outputFile = ''): bool|array
     {
         ini_set('memory_limit', '-1');
-
         $handle = null;
         $outputHandle = null;
         $hashSet = [];
@@ -190,7 +189,7 @@ class FileUtils
             if (!$handle) {
                 throw new Exception("打开输入文件失败： 输入文件：$inputFile. 请检查文件是否存在且可读。");
             }
-            if (!is_null($outputFile)) {
+            if (!empty($outputFile)) {
                 $directory = dirname($outputFile);
                 // 检查目录是否存在，不存在则创建
                 if (!is_dir($directory)) {
@@ -207,7 +206,7 @@ class FileUtils
                 $line = trim($line);
                 if ($line !== '' && !isset($hashSet[$line])) {
                     $hashSet[$line] = true; // 记录唯一值
-                    if (!is_null($outputFile)) {
+                    if (!empty($outputFile)) {
                         fwrite($outputHandle, $line . PHP_EOL); // 写入输出文件
                     }
                 }
@@ -223,7 +222,7 @@ class FileUtils
             }
         }
         // 返回结果
-        if (!is_null($outputFile)) {
+        if (empty($outputFile)) {
             return array_keys($hashSet); // 返回唯一值的数组
         } else {
             return true;
@@ -241,8 +240,9 @@ class FileUtils
      * @return bool|array
      * @throws Exception
      */
-    function getCommonLinesFromFiles(array $filePaths, string $outputFile = ''): bool|array
+    public static function getCommonLinesFromFiles(array $filePaths, string $outputFile = ''): bool|array
     {
+        ini_set('memory_limit', '-1');
         $commonLines = null;
         foreach ($filePaths as $filePath) {
             $handle = fopen($filePath, 'r');
@@ -267,7 +267,7 @@ class FileUtils
             }
         }
         $result = array_keys($commonLines);
-        if (!is_null($outputFile)) {
+        if (!empty($outputFile)) {
             $tempFile = $outputFile . '.tmp';
             file_put_contents($tempFile, implode(PHP_EOL, $result));
             rename($tempFile, $outputFile); // 使用原子写入方式
@@ -285,11 +285,12 @@ class FileUtils
      * @param string $inputFolder 文件夹路径
      * @param int $columnIndex 获取第几列数据，从0开始
      * @param string $outputFile 输出文件路径，如果为空字符串，则不保存结果
+     * @param bool $skipHeader 是否跳过第一行标题行
      * 
      * @return bool|array
      * @throws Exception
      */
-    function extractColumnFromCsvFiles(string $inputFolder, int $columnIndex, string $outputFile = '', bool $skipHeader = true): bool|array
+    public static function extractColumnFromCsvFiles(string $inputFolder, int $columnIndex, string $outputFile = '', bool $skipHeader = true): bool|array
     {
         $hashSet = [];
         try {
@@ -298,9 +299,11 @@ class FileUtils
                 throw new Exception("输入文件夹不存在： $inputFolder");
             }
             // 打开输出文件（以追加模式写入）
-            $outputHandle = fopen($outputFile, 'a');
-            if (!$outputHandle) {
-                throw new Exception("打开输出文件失败： $outputFile");
+            if (!empty($outputFile)) {
+                $outputHandle = fopen($outputFile, 'a');
+                if (!$outputHandle) {
+                    throw new Exception("打开输出文件失败： $outputFile");
+                }
             }
             // 获取文件夹中的所有 CSV 文件
             $csvFiles = glob("$inputFolder/*.csv");
@@ -326,7 +329,7 @@ class FileUtils
                     $columnData = $row[$columnIndex] ?? '';
                     // 如果数据存在且非空，写入到输出文件
                     if (!empty($columnData)) {
-                        if (!is_null($outputFile)) {
+                        if (!empty($outputFile)) {
                             fwrite($outputHandle, $columnData . PHP_EOL); // 写入输出文件
                         } else {
                             $hashSet[] = $columnData;
@@ -335,12 +338,14 @@ class FileUtils
                 }
                 fclose($handle);
             }
-            fclose($outputHandle);
+            if (!empty($outputFile)) {
+                fclose($outputHandle);
+            }
         } catch (Exception $e) {
             throw new Exception("Error: " . $e->getMessage());
         }
         // 返回数据
-        if (!is_null($outputFile)) {
+        if (!empty($outputFile)) {
             return true;
         } else {
             return $hashSet;

@@ -60,6 +60,9 @@ $result = Str::getRandomSurname();
 | FileUtils::joinPaths() | 拼接多个路径 |
 | FileUtils::getFileNameWithoutExtension() | 获取文件名（不带扩展名） |
 | FileUtils::fileDelete() | 删除文件或目录 |
+| FileUtils::writeUniqueLinesToFile() | 获取文件中的唯一行（去重） |
+| FileUtils::getCommonLinesFromFiles() | 从多个文件中获取交集行 |
+| FileUtils::extractColumnFromCsvFiles() | 从多个csv文件中快速提取列 |
 
 
 ### 网络请求操作
