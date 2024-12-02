@@ -170,10 +170,13 @@ class FileUtils
     /**
      * 获取文件中的唯一行（去重）
      * 
+     * 可选择保存到指定的输出文件
+     * 
      * @param string $inputFile 指定检查的文件路径
-     * @param string $outputFile 指定最终唯一值写入文件路径，为空则在方法结果中返回数组
+     * @param string $outputFile 输出文件路径，如果为空字符串，则不保存结果
      * 
      * @return bool|array 
+     * @throws Exception
      */
     public function writeUniqueLinesToFile(string $inputFile, string $outputFile = ''): bool|array
     {
@@ -224,6 +227,53 @@ class FileUtils
             return array_keys($hashSet); // 返回唯一值的数组
         } else {
             return true;
+        }
+    }
+
+    /**
+     * 从多个文件中获取交集行
+     * 
+     * 可选择保存到指定的输出文件
+     *
+     * @param array $filePaths 文件路径数组
+     * @param string|null $outputFile 输出文件路径，如果为空字符串，则不保存结果
+     * 
+     * @return bool|array
+     * @throws Exception
+     */
+    function getCommonLinesFromFiles(array $filePaths, string $outputFile = ''): bool|array
+    {
+        $commonLines = null;
+        foreach ($filePaths as $filePath) {
+            $handle = fopen($filePath, 'r');
+            if (!$handle) {
+                throw new Exception("打开 $filePath 失败");
+            }
+            $fileLines = [];
+            try {
+                while (($line = fgets($handle)) !== false) {
+                    $line = trim($line);
+                    if (!empty($line)) {
+                        $fileLines[$line] = true;
+                    }
+                }
+            } finally {
+                fclose($handle);
+            }
+            if ($commonLines === null) {
+                $commonLines = $fileLines; // 初始化交集
+            } else {
+                $commonLines = array_intersect_key($commonLines, $fileLines); // 求交集
+            }
+        }
+        $result = array_keys($commonLines);
+        if (!is_null($outputFile)) {
+            $tempFile = $outputFile . '.tmp';
+            file_put_contents($tempFile, implode(PHP_EOL, $result));
+            rename($tempFile, $outputFile); // 使用原子写入方式
+            return true;
+        } else {
+            return $result;
         }
     }
 }
