@@ -170,7 +170,7 @@ class FileUtils
     /**
      * 获取文件中的唯一行（去重）
      * 
-     * 可选择保存到指定的输出文件
+     * 可选择保存到指定的输出文件，内容较大时建议输出到指定文件
      * 
      * @param string $inputFile 指定检查的文件路径
      * @param string $outputFile 输出文件路径，如果为空字符串，则不保存结果
@@ -207,7 +207,7 @@ class FileUtils
                 $line = trim($line);
                 if ($line !== '' && !isset($hashSet[$line])) {
                     $hashSet[$line] = true; // 记录唯一值
-                    if ($outputFile !== null) {
+                    if (!is_null($outputFile)) {
                         fwrite($outputHandle, $line . PHP_EOL); // 写入输出文件
                     }
                 }
@@ -233,7 +233,7 @@ class FileUtils
     /**
      * 从多个文件中获取交集行
      * 
-     * 可选择保存到指定的输出文件
+     * 可选择保存到指定的输出文件，内容较大时建议输出到指定文件
      *
      * @param array $filePaths 文件路径数组
      * @param string|null $outputFile 输出文件路径，如果为空字符串，则不保存结果
@@ -260,7 +260,7 @@ class FileUtils
             } finally {
                 fclose($handle);
             }
-            if ($commonLines === null) {
+            if (is_null($commonLines)) {
                 $commonLines = $fileLines; // 初始化交集
             } else {
                 $commonLines = array_intersect_key($commonLines, $fileLines); // 求交集
@@ -274,6 +274,76 @@ class FileUtils
             return true;
         } else {
             return $result;
+        }
+    }
+
+    /**
+     * 从多个csv文件中快速提取列
+     * 
+     * 适用于提取一个文件夹中所有csv文件的特定列，可选择保存到指定的输出文件，内容较大时建议输出到指定文件
+     * 
+     * @param string $inputFolder 文件夹路径
+     * @param int $columnIndex 获取第几列数据，从0开始
+     * @param string $outputFile 输出文件路径，如果为空字符串，则不保存结果
+     * 
+     * @return bool|array
+     * @throws Exception
+     */
+    function extractColumnFromCsvFiles(string $inputFolder, int $columnIndex, string $outputFile = '', bool $skipHeader = true): bool|array
+    {
+        $hashSet = [];
+        try {
+            // 检查输入文件夹是否存在
+            if (!is_dir($inputFolder)) {
+                throw new Exception("输入文件夹不存在： $inputFolder");
+            }
+            // 打开输出文件（以追加模式写入）
+            $outputHandle = fopen($outputFile, 'a');
+            if (!$outputHandle) {
+                throw new Exception("打开输出文件失败： $outputFile");
+            }
+            // 获取文件夹中的所有 CSV 文件
+            $csvFiles = glob("$inputFolder/*.csv");
+            if (empty($csvFiles)) {
+                throw new Exception("在文件夹：$inputFolder 中未发现 CSV 文件");
+            }
+            // 逐个处理每个 CSV 文件
+            foreach ($csvFiles as $file) {
+                // 打开 CSV 文件
+                $handle = fopen($file, 'r');
+                if (!$handle) {
+                    echo "Failed to open file: $file\n";
+                    continue;
+                }
+                $lineNumber = 0;
+                while (($row = fgetcsv($handle)) !== false) {
+                    $lineNumber++;
+                    // 跳过第一行（标题行）
+                    if ($lineNumber == 1 && $skipHeader) {
+                        continue;
+                    }
+                    // 提取指定列的数据
+                    $columnData = $row[$columnIndex] ?? '';
+                    // 如果数据存在且非空，写入到输出文件
+                    if (!empty($columnData)) {
+                        if (!is_null($outputFile)) {
+                            fwrite($outputHandle, $columnData . PHP_EOL); // 写入输出文件
+                        } else {
+                            $hashSet[] = $columnData;
+                        }
+                    }
+                }
+                fclose($handle);
+            }
+            fclose($outputHandle);
+        } catch (Exception $e) {
+            throw new Exception("Error: " . $e->getMessage());
+        }
+        // 返回数据
+        if (!is_null($outputFile)) {
+            return true;
+        } else {
+            return $hashSet;
         }
     }
 }
