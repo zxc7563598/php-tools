@@ -43,7 +43,7 @@ class Str
      *
      * @return string
      */
-    function padString(string $paddingChar = ' ', string $inputStr = '', int $targetLength = 8, string $direction = 'top'): string
+    public static function padString(string $paddingChar = ' ', string $inputStr = '', int $targetLength = 8, string $direction = 'top'): string
     {
         // 如果目标长度小于或等于原始字符串长度，直接返回原始字符串
         if ($targetLength <= strlen($inputStr)) {
@@ -70,7 +70,7 @@ class Str
      *
      * @return string  替换后的字符串，如果搜索字符串未找到，则返回原始字符串
      */
-    function replaceFirst(string $search, string $replace, string $targetStr): string
+    public static function replaceFirst(string $search, string $replace, string $targetStr): string
     {
         // 如果搜索字符串为空，直接返回目标字符串
         if ($search === '') {
