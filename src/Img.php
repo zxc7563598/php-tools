@@ -107,19 +107,16 @@ class Img
         if (count($imageData) !== 2) {
             throw new \Exception('Base64 数据无效');
         }
+        // 提取并验证 MIME 类型和扩展名
+        if (preg_match('/^data:image\/([a-zA-Z0-9]+);base64$/', $imageData[0], $matches)) {
+            $extension = $matches[1]; // 正确获取扩展名
+        } else {
+            throw new \Exception('无效的 Base64 数据前缀');
+        }
         // 解码 Base64 数据
         $decodedData = base64_decode($imageData[1]);
         if ($decodedData === false) {
             throw new \Exception('Base64 数据解码失败');
-        }
-        // 获取图片的 MIME 类型
-        $mimeType = explode(':', substr($imageData[0], 5))[0];
-        if (strpos($mimeType, '/') === false) {
-            throw new \Exception('无效的 MIME 类型');
-        }
-        $extension = explode('/', $mimeType)[1];  // 获取扩展名
-        if (empty($extension)) {
-            throw new \Exception('无法确定图片扩展名');
         }
         // 如果没有传入文件名称，生成随机名称
         if (empty($fileName)) {
@@ -136,8 +133,12 @@ class Img
         if (file_put_contents($savePath, $decodedData) === false) {
             throw new \Exception('保存图片失败: ' . $savePath);
         }
-        return $savePath;  // 返回完整保存路径
+        // 设置文件权限
+        chmod($savePath, 0755);
+        // 返回完整保存路径
+        return $savePath;
     }
+
 
     /**
      * 压缩图片到指定大小（单位 KB），支持多种格式转换为 JPEG
