@@ -34,6 +34,57 @@ class Str
     }
 
     /**
+     * 补充特定字符串，使其达到指定长度
+     *
+     * @param string $paddingChar 填充字符（默认填充空格）
+     * @param string $inputStr 原始字符串
+     * @param int $targetLength 最终字符串长度（必须大于或等于原始字符串长度）
+     * @param string $direction 填充方向（'top' 表示前置填充，'bottom' 表示后置填充，默认 'top'）
+     *
+     * @return string
+     */
+    function padString(string $paddingChar = ' ', string $inputStr = '', int $targetLength = 8, string $direction = 'top'): string
+    {
+        // 如果目标长度小于或等于原始字符串长度，直接返回原始字符串
+        if ($targetLength <= strlen($inputStr)) {
+            return $inputStr;
+        }
+
+        // 计算需要补充的字符数量
+        $paddingCount = $targetLength - strlen($inputStr);
+
+        // 根据填充方向返回处理结果
+        return match ($direction) {
+            'top' => str_repeat($paddingChar, $paddingCount) . $inputStr,
+            'bottom' => $inputStr . str_repeat($paddingChar, $paddingCount),
+            default => $inputStr, // 未知方向直接返回原始字符串
+        };
+    }
+
+    /**
+     * 替换字符串中第一次出现的搜索值
+     *
+     * @param string $search    搜索字符串（不能为空）
+     * @param string $replace   替换字符串
+     * @param string $targetStr 目标字符串
+     *
+     * @return string  替换后的字符串，如果搜索字符串未找到，则返回原始字符串
+     */
+    function replaceFirst(string $search, string $replace, string $targetStr): string
+    {
+        // 如果搜索字符串为空，直接返回目标字符串
+        if ($search === '') {
+            return $targetStr;
+        }
+        // 查找搜索字符串首次出现的位置
+        $firstPosition = strpos($targetStr, $search);
+        // 如果找到，进行替换；否则返回原始字符串
+        return $firstPosition !== false
+            ? substr_replace($targetStr, $replace, $firstPosition, strlen($search))
+            : $targetStr;
+    }
+
+    /**
      * 生成随机字符串
      * 
      * @param int $len 生成长度
