@@ -99,6 +99,86 @@ $result = Str::getRandomSurname();
 | :-------------------------------- | :----------------------- |
 | IdAddressLookup::getAddressInfo() | 根据身份证号获取地址信息 |
 
+### 多层缓存
+
+**注意**：为了拓展方便，代码仅仅实现了缓存层（内存/redis/文件），实际应用场景中建议自行完善数据层，大概代码如下所示
+
+```php
+<?php
+
+// 自定义数据源 - 数据库层
+class UserDataSource implements \Hejunjie\Tools\Cache\Interfaces\DataSourceInterface
+{
+    
+    // 构造函数，如果是最后一层则不需要构造函数
+    // public function __construct(
+    //     DataSourceInterface $wrapped
+    // ) {
+    //     parent::__construct($wrapped);
+    // }
+
+    public function get(string $key): ?string
+    {
+        // 根据 key 在数据库中获取对应内容
+        // 返回内容字符串 `string`
+
+        // 如果下一层返回数据，则在当前层存储。如果是最后一层则不需要下列代码
+        // $content = $this->wrapped->get($key);
+        // if ($content !== null) {
+        //     $this->set($key, $content);
+        // }
+        // return $content;
+
+    }
+
+    public function set(string $key, string $value): bool
+    {
+        // 根据 key 在数据库中存储 value
+        // 返回存储结果 `bool`
+    }
+}
+
+```
+
+实际使用方法：
+
+```php
+<?php
+
+use Hejunjie\Tools\Cache\Decorators;
+
+// 构建缓存链：内存 → Redis → 文件 → 自定义数据源
+$cache = new Decorators\MemoryCache(
+    new Decorators\RedisCache(
+        new Decorators\FileCache(
+            new UserDataSource(
+                ... // 可以继续套娃
+            ),
+            '[文件]缓存文件夹路径',
+            '[文件]缓存时长(秒)'
+        ),
+        '[redis]配置'
+        '[redis]前缀'
+        '[redis]是否持久化链接'
+    ),
+    '[内存]缓存时长(秒)',
+    '[内存]缓存数量(防止内存溢出)'
+);
+
+// 获取数据
+$data = $cache->get('key')
+// 存储数据
+$data = $cache->set('key','value')
+
+```
+
+| 存储层                 | 数据保留时间                     |
+| :--------------------- | :------------------------------- |
+| [内存] MemoryCache      | 进程生命周期（脚本结束即消失）   |
+| [redis] RedisCache      | 根据配置的TTL（默认1小时）       |
+| [文件] FileCache        | 文件系统保留，直到过期或手动删除 |
+| [数据库] UserDataSource | 用户自行实现                     |
+
 ---
 
 该库后续将持续更新，添加更多实用功能。欢迎大家提供建议和反馈，我会根据大家的意见实现新的功能，共同提升开发效率。
