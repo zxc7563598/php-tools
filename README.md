@@ -179,6 +179,17 @@ $data = $cache->set('key','value')
 | [文件] FileCache        | 文件系统保留，直到过期或手动删除 |
 | [数据库] UserDataSource | 用户自行实现                     |
 
+#### Redis 配置
+- cluster: 是否集群 `bool` `默认 false`
+- hosts: 集群主机 `array` `cluster 为 true 必填`
+- host: 主机 `string` `cluster 为 false 必填`
+- port: 端口 `int` `默认 6379`
+- password: 密码 `string` `默认 null`
+- db: 数据库 `int` `非必须，不传则等于根据 redis 配置选择`
+- ttl: 过期时间 `int` `默认 3600`
+- timeout: 超时时间 `float` `默认 2.0`
+- read_timeout: 读取超时时间 `float` `默认 2.0`
+
 ---
 
 该库后续将持续更新，添加更多实用功能。欢迎大家提供建议和反馈，我会根据大家的意见实现新的功能，共同提升开发效率。
