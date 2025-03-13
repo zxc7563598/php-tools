@@ -214,6 +214,8 @@ $log->log('自定义级别','标题','内容',['上下文']);
 
 ```
 
+**以及**：如果有其他的拓展需要可以自行实现，实现 ` \Hejunjie\Tools\Log\LogHandlerInterface ` 即可
+
 
 
 ---
