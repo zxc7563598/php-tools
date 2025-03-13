@@ -193,3 +193,28 @@ $data = $cache->set('key','value')
 ---
 
 该库后续将持续更新，添加更多实用功能。欢迎大家提供建议和反馈，我会根据大家的意见实现新的功能，共同提升开发效率。
+
+
+### 日志记录
+
+不同框架通常自带日志系统，但要么强绑定到框架，更换框架就要重构日志方案，要么像 Monolog 这类强大的日志系统功能过于庞大。而为了在不同框架中保持通用性，同时避免过度复杂，我基于责任链模式实现了一个轻量级的日志模块
+
+使用方法：
+
+```php
+<?php
+
+$log = new \Hejunjie\Tools\Log\Logger([
+    new \Hejunjie\Tools\Log\Handlers\ConsoleHandler(),                // 打印到控制台
+    new \Hejunjie\Tools\Log\Handlers\FileHandler('日志存储文件夹路径'),  // 存储到文件
+    new \Hejunjie\Tools\Log\Handlers\RemoteApiHandler('请求url')       // 发送到某个地址
+]);
+
+$log->info('标题','内容',['上下文']);     // INFO 级
+$log->warning('标题','内容',['上下文']);  // WARNING 级
+$log->error('标题','内容',['上下文']);    // ERROR 级
+
+$log->log('自定义级别','标题','内容',['上下文']);
+
+```
+
