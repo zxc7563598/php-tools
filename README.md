@@ -109,12 +109,13 @@ $result = Str::getRandomSurname();
 // 自定义数据源 - 数据库层
 class UserDataSource implements \Hejunjie\Tools\Cache\Interfaces\DataSourceInterface
 {
+    protected DataSourceInterface $wrapped;
     
     // 构造函数，如果是最后一层则不需要构造函数
     // public function __construct(
     //     DataSourceInterface $wrapped
     // ) {
-    //     parent::__construct($wrapped);
+    //     $this->wrapped = $wrapped;
     // }
 
     public function get(string $key): ?string
