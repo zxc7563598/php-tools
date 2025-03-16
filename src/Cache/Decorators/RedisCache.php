@@ -3,13 +3,13 @@
 namespace Hejunjie\Tools\Cache\Decorators;
 
 use Exception;
-use Hejunjie\Tools\Cache\CacheDecorator;
 use Hejunjie\Tools\Cache\Interfaces\DataSourceInterface;
 use Redis;
 use RedisCluster;
 
-class RedisCache extends CacheDecorator
+class RedisCache implements DataSourceInterface
 {
+    protected DataSourceInterface $wrapped;
     private $redis;
     private string $prefix;
     private array $config;
@@ -31,7 +31,7 @@ class RedisCache extends CacheDecorator
         string $prefix = 'cache:',
         bool $persistent = true
     ) {
-        parent::__construct($wrapped);
+        $this->wrapped = $wrapped;
         $this->config = $config;
         $this->prefix = $prefix;
         $this->persistent = $persistent;
@@ -52,8 +52,10 @@ class RedisCache extends CacheDecorator
         try {
             $value = $this->redis->get($key);
             if ($value !== false) {
+                echo '[Redis]获取成功' . PHP_EOL;
                 return $value;
             }
+            echo '[Redis]获取失败' . PHP_EOL;
             $content = $this->wrapped->get($key);
             if ($content !== null) {
                 $this->set($key, $content);
