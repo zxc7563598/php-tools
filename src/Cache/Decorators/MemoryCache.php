@@ -3,11 +3,11 @@
 namespace Hejunjie\Tools\Cache\Decorators;
 
 use Exception;
-use Hejunjie\Tools\Cache\CacheDecorator;
 use Hejunjie\Tools\Cache\Interfaces\DataSourceInterface;
 
-class MemoryCache extends CacheDecorator
+class MemoryCache implements DataSourceInterface
 {
+    protected DataSourceInterface $wrapped;
     private array $cache = [];
     private int $ttl;
     private int $maxItems;
@@ -28,7 +28,7 @@ class MemoryCache extends CacheDecorator
         int $ttl = 3600,
         int $maxItems = 1024
     ) {
-        parent::__construct($wrapped);
+        $this->wrapped = $wrapped;
         $this->ttl = $ttl;
         $this->maxItems = $maxItems;
     }
@@ -49,10 +49,12 @@ class MemoryCache extends CacheDecorator
             if ($entry['expire'] > time()) {
                 $this->hits++;
                 $entry['access'] = microtime(true);
+                echo '[内存]获取成功' . PHP_EOL;
                 return $entry['value'];
             }
             unset($this->cache[$key]);
         }
+        echo '[内存]获取失败' . PHP_EOL;
         $this->misses++;
         $content = $this->wrapped->get($key);
         if ($content !== null) {

@@ -3,11 +3,11 @@
 namespace Hejunjie\Tools\Cache\Decorators;
 
 use Exception;
-use Hejunjie\Tools\Cache\CacheDecorator;
 use Hejunjie\Tools\Cache\Interfaces\DataSourceInterface;
 
-class FileCache extends CacheDecorator
+class FileCache implements DataSourceInterface
 {
+    protected DataSourceInterface $wrapped;
     private string $cacheDir;
     private int $ttl;
 
@@ -25,7 +25,7 @@ class FileCache extends CacheDecorator
         string $cacheDir,
         int $ttl = 3600
     ) {
-        parent::__construct($wrapped);
+        $this->wrapped = $wrapped;
         $this->validateDir($cacheDir);
         $this->cacheDir = rtrim($cacheDir, '/');
         $this->ttl = $ttl;
@@ -45,10 +45,12 @@ class FileCache extends CacheDecorator
         if (file_exists($filePath)) {
             $data = $this->readWithLock($filePath);
             if ($data['expire'] > time()) {
+                echo '[文件]获取成功' . PHP_EOL;
                 return $data['content'];
             }
             $this->deleteFile($filePath);
         }
+        echo '[文件]获取失败' . PHP_EOL;
         $content = $this->wrapped->get($key);
         if ($content !== null) {
             $this->storeToFile($key, $content);
