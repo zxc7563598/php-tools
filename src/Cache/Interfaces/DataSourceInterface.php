@@ -22,4 +22,13 @@ interface DataSourceInterface
      * @return bool 是否成功
      */
     public function set(string $key, string $value): bool;
+
+    /**
+     * 删除数据
+     * 
+     * @param string $key 数据键
+     * 
+     * @return void
+     */
+    public function del(string $key): void;
 }

@@ -45,12 +45,10 @@ class FileCache implements DataSourceInterface
         if (file_exists($filePath)) {
             $data = $this->readWithLock($filePath);
             if ($data['expire'] > time()) {
-                echo '[文件]获取成功' . PHP_EOL;
                 return $data['content'];
             }
             $this->deleteFile($filePath);
         }
-        echo '[文件]获取失败' . PHP_EOL;
         $content = $this->wrapped->get($key);
         if ($content !== null) {
             $this->storeToFile($key, $content);
@@ -78,6 +76,23 @@ class FileCache implements DataSourceInterface
 
     /**
      * 删除缓存
+     * 
+     * @param string $key key
+     * 
+     * @return string|null
+     * @throws Exception 
+     */
+    public function del(string $key): void
+    {
+        $filePath = $this->getFilePath($key);
+        if (file_exists($filePath)) {
+            $this->deleteFile($filePath);
+        }
+        $this->wrapped->del($key);
+    }
+
+    /**
+     * 存储到文件
      * 
      * @param string $key key
      * @param string $value 存储值

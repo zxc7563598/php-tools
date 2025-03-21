@@ -52,10 +52,8 @@ class RedisCache implements DataSourceInterface
         try {
             $value = $this->redis->get($key);
             if ($value !== false) {
-                echo '[Redis]获取成功' . PHP_EOL;
                 return $value;
             }
-            echo '[Redis]获取失败' . PHP_EOL;
             $content = $this->wrapped->get($key);
             if ($content !== null) {
                 $this->set($key, $content);
@@ -88,6 +86,25 @@ class RedisCache implements DataSourceInterface
         } catch (\Exception $e) {
             throw new \Exception("redis异常: " . $e->getMessage());
         }
+    }
+
+    /**
+     * 删除缓存
+     * 
+     * @param string $key key
+     * 
+     * @return string|null
+     * @throws Exception 
+     */
+    public function del(string $key): void
+    {
+        $this->validateKey($key);
+        try {
+            $this->redis->del($key);
+        } catch (\Exception $e) {
+            throw new \Exception("Redis error: " . $e->getMessage());
+        }
+        $this->wrapped->del($key);
     }
 
     /**

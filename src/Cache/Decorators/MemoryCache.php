@@ -49,12 +49,10 @@ class MemoryCache implements DataSourceInterface
             if ($entry['expire'] > time()) {
                 $this->hits++;
                 $entry['access'] = microtime(true);
-                echo '[内存]获取成功' . PHP_EOL;
                 return $entry['value'];
             }
             unset($this->cache[$key]);
         }
-        echo '[内存]获取失败' . PHP_EOL;
         $this->misses++;
         $content = $this->wrapped->get($key);
         if ($content !== null) {
@@ -81,6 +79,23 @@ class MemoryCache implements DataSourceInterface
             $this->evictIfNeeded();
         }
         return $result;
+    }
+
+    /**
+     * 删除缓存
+     * 
+     * @param string $key key
+     * 
+     * @return string|null
+     * @throws Exception 
+     */
+    public function del(string $key): void
+    {
+        $this->validateKey($key);
+        if (isset($this->cache[$key])) {
+            unset($this->cache[$key]);
+        }
+        $this->wrapped->del($key);
     }
 
     /**
