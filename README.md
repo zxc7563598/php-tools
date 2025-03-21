@@ -137,6 +137,12 @@ class UserDataSource implements \Hejunjie\Tools\Cache\Interfaces\DataSourceInter
         // 根据 key 在数据库中存储 value
         // 返回存储结果 `bool`
     }
+
+    public function del(string $key, string $value): void
+    {
+        // 根据 key 在进行删除操作
+        // 不需要进行返回
+    }
 }
 
 ```
