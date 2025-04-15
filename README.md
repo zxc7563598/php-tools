@@ -19,6 +19,7 @@
 | [`hejunjie/error-log`](https://github.com/zxc7563598/php-error-log) | 责任链模式日志处理系统，支持文件、控制台、远程日志 |
 | [`hejunjie/mobile-locator`](https://github.com/zxc7563598/php-mobile-locator) | 基于国内号段规则的手机号归属地查询，含运营商识别 |
 | [`hejunjie/utils`](https://github.com/zxc7563598/php-utils) | 常用数组、字符串、文件、网络等工具函数集合 |
+| [`hejunjie/address-parser`](https://github.com/zxc7563598/php-address-parser) | 收货地址智能解析工具，支持从非结构化文本中提取用户/地址信息 |
 
 ---
 
