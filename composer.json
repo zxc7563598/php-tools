@@ -21,6 +21,7 @@
     "hejunjie/china-division": "^1.0",
     "hejunjie/error-log": "^1.0",
     "hejunjie/mobile-locator": "^1.0",
-    "hejunjie/utils": "^1.0"
+    "hejunjie/utils": "^1.0",
+    "hejunjie/address-parser": "^1.0"
   }
 }
