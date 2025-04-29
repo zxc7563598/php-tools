@@ -10,7 +10,7 @@
 
 原本所有功能集中在一个仓库中，使用方便，但不利于模块化维护和功能单独复用。
 
-因此，我把它们拆开成了以下 5 个独立的 Composer 包：
+因此，我把它们拆开成了以下 9 个独立的 Composer 包：
 
 | 包名 | 简介 |
 |------|------|
@@ -21,6 +21,8 @@
 | [`hejunjie/utils`](https://github.com/zxc7563598/php-utils) | 常用数组、字符串、文件、网络等工具函数集合 |
 | [`hejunjie/address-parser`](https://github.com/zxc7563598/php-address-parser) | 收货地址智能解析工具，支持从非结构化文本中提取用户/地址信息 |
 | [`hejunjie/url-signer`](https://github.com/zxc7563598/php-url-signer) | URL 签名工具，支持对 URL 进行签名和验证。 |
+| [`hejunjie/google-authenticator`](https://github.com/zxc7563598/php-google-authenticator) | Google Authenticator 及类似应用的密钥生成、二维码创建和 OTP 验证。 |
+| [`hejunjie/simple-rule-engine`](https://github.com/zxc7563598/php-simple-rule-engine) | 一个轻量、易用的 PHP 规则引擎，支持多条件组合、动态规则执行。 |
 
 ---
 
