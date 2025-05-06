@@ -1,6 +1,6 @@
 {
   "name": "hejunjie/tools",
-  "description": "一个PHP工具库，封装了工作中常用的字符串、数组、文件、网络请求、图像和实用程序函数（例如电话运营商和身份证号码地址查找）的常见操作。后续不断完善中...",
+  "description": "A PHP utility library that encapsulates commonly used operations for strings, arrays, files, network requests, image processing, and various helper functions (such as phone carrier lookup and ID-based address resolution) frequently encountered in daily development. More features are being continuously added...",
   "type": "library",
   "keywords": [
     "php",
